@@ -17,20 +17,16 @@ PROJECT_NAME="ocp-capabilities-demo"
 
 echo "Checking if project ${PROJECT_NAME} already exists ..."
 if oc get project "${PROJECT_NAME}" > /dev/null 2>&1 ; then
-  echo "Project ${PROJECT_NAME} already exists. Reusing it."
+  echo "Project ${PROJECT_NAME} exists."
 else
-  echo "Creating project ${PROJECT_NAME}."
-  oc new-project ocp-capabilities-demo
+  echo "Error: Project ${PROJECT_NAME} does not exist. Please run setup.sh first."
+  exit 1
 fi
 
 echo "Applying manifests ..."
 MANIFESTS_DIR="${SCRIPT_DIR}/manifests"
-oc apply -f "${MANIFESTS_DIR}/bogohttp-deployment.yaml"
-oc apply -f "${MANIFESTS_DIR}/bogohttp-hpa.yaml"
-oc apply -f "${MANIFESTS_DIR}/bogohttp-route.yaml"
-oc apply -f "${MANIFESTS_DIR}/bogohttp-svc.yaml"
+oc apply -f "${MANIFESTS_DIR}/load-test-sa.yaml"
+oc apply -f "${MANIFESTS_DIR}/load-test-cm.yaml"
+oc apply -f "${MANIFESTS_DIR}/load-test-pod.yaml"
 
-echo "Done."
-
-echo "***** Now Browse to: http:// $(oc get route bogohttp -o jsonpath --template='{.status.ingress[].host}) *****"
-
+echo "Load test is running!"
