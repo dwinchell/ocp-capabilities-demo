@@ -1,0 +1,19 @@
+apiVersion: autosalint/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: bogohttp-hpa
+  namespace: ocp-capabilities-demo
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: bogohttp
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 15

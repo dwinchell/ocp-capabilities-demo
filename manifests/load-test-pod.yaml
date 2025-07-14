@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: k6-load-test
+  namespace: ocp-capabilities-demo
+spec:
+  restartPolicy: Never
+  securityContext:
+    runAsNonRoot: true
+    # runAsUser: 12345
+    # fsGroup: 12345
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: k6
+      image: docker.io/loadimpact/k6:master
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        # runAsNonRoot: true
+        # runAsUser: 12345
+      env:
+        - name: URL
+          value: "http://bogohttp.svc:8080"
+        - name: THREADS
+          value: "50"
+        - name: DURATION
+          value: "3m"
+        - name: RAMPUP
+          value: "30s"
+        - name: RAMPDOWN
+          value: "30s"
+      command: ["k6"]
+      args: ["run", "/k6-scripts/load-test-k6.js"]
+
+      volumeMounts:
+        - name: k6-script-volume
+          mountPath: "/k6-scripts"
+          readOnly: true
+  volumes:
+    - name: k6-script-volume
+      configMap:
+        name: k6-load-test-script

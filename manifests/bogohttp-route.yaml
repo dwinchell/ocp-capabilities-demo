@@ -1,0 +1,15 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  labels:
+    app: bogohttp
+  name: bogohttp
+  namespace: ocp-capabilities-demo
+spec:
+  port:
+    targetPort: 8080-tcp
+  to:
+    kind: Service
+    name: bogohttp
+    weight: 100
+  wildcardPolicy: None
